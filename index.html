@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>DR Severity & Lesion Classifier</h1>
+        <p class="subheading">Upload fundus images below to get lesion-based predictions</p>
+
+<form method="POST" enctype="multipart/form-data" class="upload-form">
+    <input type="file" id="fileInput" name="images" accept="image/*" multiple required hidden>
+    <label for="fileInput" class="custom-file-upload">Choose Images</label>
+    <span id="fileName">No files selected</span>
+    <button type="submit">Predict</button>
+</form>
+
+        {% if results %}
+            <h2>Top 3 Predictions per Image</h2>
+            <div class="results">
+                {% for result in results %}
+                    <div class="result-card">
+                        <img src="{{ result.image }}" alt="Uploaded Image" style="width:350px; height: 350px;">
+                        <ul>
+                            {% for label, prob in result.predictions %}
+                                <li><strong>{{ label }}</strong>: {{ prob }}%</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const fileNameDisplay = document.getElementById('fileName');
+
+    fileInput.addEventListener('change', function () {
+        if (fileInput.files.length > 0) {
+            const fileNames = Array.from(fileInput.files).map(file => file.name).join(', ');
+            fileNameDisplay.textContent = fileNames;
+        } else {
+            fileNameDisplay.textContent = 'No files selected';
+        }
+    });
+</script>
+</html>
